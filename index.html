@@ -731,8 +731,8 @@ document.querySelectorAll('[data-copy]').forEach(b=>b.onclick=()=>{
   try{navigator.clipboard.writeText(b.dataset.copy).then(done,()=>{const s=getSelection(),r=document.createRange();r.selectNodeContents(b.previousElementSibling.querySelector('.v'));s.removeAllRanges();s.addRange(r);});}catch(e){}
 });
 
-// contact form: sends to Amna's inbox through FormSubmit (no account; the first message triggers a one-time activation email)
-const FORM_ENDPOINT='https://formsubmit.co/ajax/amna05chaudhry@gmail.com';
+// contact form: sends to Amna's inbox through FormSubmit (address alias, so the email is not in the endpoint)
+const FORM_ENDPOINT='https://formsubmit.co/ajax/fcf118e661ccc25d749ef6ce422692d4';
 const cf=$('#cform'),fs=$('#fstatus');
 cf.addEventListener('submit',async e=>{
   e.preventDefault();
@@ -746,7 +746,7 @@ cf.addEventListener('submit',async e=>{
     const r=await fetch(FORM_ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json'},
       body:JSON.stringify({name:f.name.trim(),email:f.email.trim(),message:f.message.trim(),_subject:'Portfolio message from '+f.name.trim(),_template:'table',_captcha:'false'})});
     const j=await r.json().catch(()=>({}));
-    if(!r.ok||String(j.success)!=='true')throw new Error(j.message||'send failed');
+    if(!r.ok||String(j.success)!=='true'){if(/activat/i.test(j.message||'')){fs.className='fstatus err';fs.innerHTML='The form is still being set up. Please <a href="mailto:amna05chaudhry@gmail.com">email me directly</a> for now.';return;}throw new Error(j.message||'send failed');}
     cf.reset();fs.className='fstatus ok';fs.textContent="Thanks! Your message is on its way. I'll reply soon.";
   }catch(err){
     const body=encodeURIComponent(f.message.trim()+'\n\n'+f.name.trim()+' ('+f.email.trim()+')');
